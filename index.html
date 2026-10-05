@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Family Tree</title>
+  <style>
+    :root {
+      --bg: #f7faf7;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #667085;
+      --line: #9aa7a1;
+      --accent: #2f7d5c;
+      --accent-soft: #e9f4ee;
+      --border: #d7e2dc;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.4;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 0 6px;
+      font-size: clamp(1.8rem, 5vw, 2.7rem);
+    }
+
+    .subtitle {
+      margin: 0 auto;
+      max-width: 700px;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .student-info {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin: 18px 0;
+    }
+
+    .field-card,
+    .person-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 6px;
+      font-size: .95rem;
+    }
+
+    input {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid #b9c5bf;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-size: 16px;
+      color: var(--text);
+      background: #fff;
+    }
+
+    input:focus {
+      outline: 3px solid rgba(47, 125, 92, .2);
+      border-color: var(--accent);
+    }
+
+    .tree {
+      display: grid;
+      gap: 18px;
+    }
+
+    .generation-title {
+      text-align: center;
+      font-size: .88rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 4px 0 8px;
+      font-weight: 700;
+    }
+
+    .generation {
+      display: grid;
+      gap: 12px;
+    }
+
+    .greats {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .grandparents {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .parents {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .center-family {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .children {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      max-width: 560px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .person-card {
+      position: relative;
+      min-width: 0;
+    }
+
+    .person-card strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: .96rem;
+    }
+
+    .person-card small {
+      display: block;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .side-heading {
+      background: var(--accent-soft);
+      border-radius: 10px;
+      padding: 8px 10px;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .line {
+      height: 2px;
+      background: var(--line);
+      margin: 0 auto;
+      width: min(86%, 760px);
+      opacity: .55;
+    }
+
+    .actions {
+      position: sticky;
+      bottom: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      padding: 14px 0 2px;
+      background: linear-gradient(to top, var(--bg) 70%, rgba(247,250,247,0));
+      margin-top: 22px;
+    }
+
+    button {
+      min-height: 46px;
+      border: 0;
+      border-radius: 12px;
+      padding: 11px 18px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .primary {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .secondary {
+      background: #eef2f0;
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .note {
+      background: #fff8e8;
+      border: 1px solid #ead9ab;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-top: 18px;
+      font-size: .95rem;
+    }
+
+    @media (max-width: 760px) {
+      .page { padding: 12px; }
+
+      .student-info {
+        grid-template-columns: 1fr;
+      }
+
+      .greats,
+      .grandparents,
+      .parents,
+      .center-family,
+      .children {
+        grid-template-columns: 1fr;
+      }
+
+      .generation {
+        gap: 10px;
+      }
+
+      .side-heading {
+        margin-top: 4px;
+      }
+
+      .line {
+        width: 55%;
+      }
+
+      .person-card {
+        padding: 11px;
+      }
+    }
+
+    @media print {
+      @page {
+        size: letter portrait;
+        margin: 0.35in;
+      }
+
+      body {
+        background: #fff;
+        font-size: 10.5pt;
+      }
+
+      .page {
+        max-width: none;
+        padding: 0;
+      }
+
+      .header {
+        margin-bottom: 10px;
+      }
+
+      .subtitle,
+      .actions,
+      .note {
+        display: none !important;
+      }
+
+      .student-info,
+      .tree,
+      .generation {
+        gap: 7px;
+      }
+
+      .student-info {
+        margin: 8px 0 10px;
+      }
+
+      .greats,
+      .grandparents,
+      .parents,
+      .center-family {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .children {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .field-card,
+      .person-card {
+        border-radius: 8px;
+        padding: 7px;
+        break-inside: avoid;
+      }
+
+      .person-card strong,
+      label {
+        font-size: 9pt;
+        margin-bottom: 3px;
+      }
+
+      input {
+        min-height: 28px;
+        border: 1px solid #888;
+        padding: 4px 6px;
+        font-size: 9pt;
+      }
+
+      .generation-title {
+        font-size: 7.5pt;
+        margin: 2px 0 4px;
+      }
+
+      .side-heading {
+        padding: 4px 6px;
+        margin-bottom: 5px;
+        font-size: 9pt;
+      }
+
+      .line {
+        margin: 2px auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="header">
+      <h1>My Family Tree</h1>
+      <p class="subtitle">
+        Type the names of your family members in the boxes. If a box does not apply to your family,
+        you may leave it blank. When you are finished, tap <strong>Save as PDF / Print</strong>.
+      </p>
+    </header>
+
+    <section class="student-info" aria-label="Student information">
+      <div class="field-card">
+        <label for="studentName">Student Name</label>
+        <input id="studentName" type="text" autocomplete="name" placeholder="Type your name" />
+      </div>
+      <div class="field-card">
+        <label for="className">Class / Period</label>
+        <input id="className" type="text" placeholder="Example: Period 2" />
+      </div>
+    </section>
+
+    <section class="tree" aria-label="Family tree">
+      <div>
+        <div class="generation-title">Great-Grandparents</div>
+        <div class="generation greats">
+          <div class="person-card">
+            <div class="side-heading">Mother's Side</div>
+            <strong>Great-Grandmother</strong>
+            <input type="text" placeholder="Name" />
+          </div>
+          <div class="person-card">
+            <div class="side-heading">Mother's Side</div>
+            <strong>Great-Grandfather</strong>
+            <input type="text" placeholder="Name" />
+          </div>
+          <div class="person-card">
+            <div class="side-heading">Father's Side</div>
+            <strong>Great-Grandmother</strong>
+            <input type="text" placeholder="Name" />
+          </div>
+          <div class="person-card">
+            <div class="side-heading">Father's Side</div>
+            <strong>Great-Grandfather</strong>
+            <input type="text" placeholder="Name" />
+          </div>
+        </div>
+      </div>
+
+      <div class="line"></div>
+
+      <div>
+        <div class="generation-title">Grandparents</div>
+        <div class="generation grandparents">
+          <div class="person-card">
+            <div class="side-heading">Mother's Side</div>
+            <strong>Grandmother</strong>
+            <input type="text" placeholder="Name" />
+          </div>
+          <div class="person-card">
+            <div class="side-heading">Mother's Side</div>
+            <strong>Grandfather</strong>
+            <input type="text" placeholder="Name" />
+          </div>
+          <div class="person-card">
+            <div class="side-heading">Father's Side</div>
+            <strong>Grandmother</strong>
+            <input type="text" placeholder="Name" />
+          </div>
+          <div class="person-card">
+            <div class="side-heading">Father's Side</div>
+            <strong>Grandfather</strong>
+            <input type="text" placeholder="Name" />
+          </div>
+        </div>
+      </div>
+
+      <div class="line"></div>
+
+      <div>
+        <div class="generation-title">Parents and Their Siblings</div>
+        <div class="generation parents">
+          <div class="person-card">
+            <strong>Mother</strong>
+            <input type="text" placeholder="Name" />
+          </div>
+          <div class="person-card">
+            <strong>Mother's Sibling(s)</strong>
+            <input type="text" placeholder="Names" />
+            <small>You may separate names with commas.</small>
+          </div>
+          <div class="person-card">
+            <strong>Father</strong>
+            <input type="text" placeholder="Name" />
+          </div>
+          <div class="person-card">
+            <strong>Father's Sibling(s)</strong>
+            <input type="text" placeholder="Names" />
+            <small>You may separate names with commas.</small>
+          </div>
+        </div>
+      </div>
+
+      <div class="line"></div>
+
+      <div>
+        <div class="generation-title">My Generation</div>
+        <div class="generation center-family">
+          <div class="person-card">
+            <strong>Me</strong>
+            <input type="text" placeholder="My name" />
+          </div>
+          <div class="person-card">
+            <strong>My Sibling(s)</strong>
+            <input type="text" placeholder="Names" />
+          </div>
+          <div class="person-card">
+            <strong>My Spouse</strong>
+            <input type="text" placeholder="Name" />
+          </div>
+          <div class="person-card">
+            <strong>Other Important Family Member</strong>
+            <input type="text" placeholder="Name" />
+          </div>
+        </div>
+      </div>
+
+      <div class="line"></div>
+
+      <div>
+        <div class="generation-title">My Children</div>
+        <div class="generation children">
+          <div class="person-card">
+            <strong>My Child / Children</strong>
+            <input type="text" placeholder="Names" />
+            <small>You may separate names with commas.</small>
+          </div>
+          <div class="person-card">
+            <strong>Additional Child / Children</strong>
+            <input type="text" placeholder="Names" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="note">
+      <strong>For phones:</strong> After you tap <em>Save as PDF / Print</em>, choose your phone's
+      PDF or print option. On many Android phones choose <em>Save as PDF</em>. On iPhone/iPad,
+      use the print preview and then Share/Save to Files as a PDF.
+    </div>
+
+    <div class="actions">
+      <button class="primary" id="printBtn" type="button">Save as PDF / Print</button>
+      <button class="secondary" id="clearBtn" type="button">Clear All</button>
+    </div>
+  </main>
+
+  <script>
+    const printBtn = document.getElementById('printBtn');
+    const clearBtn = document.getElementById('clearBtn');
+
+    printBtn.addEventListener('click', () => {
+      window.print();
+    });
+
+    clearBtn.addEventListener('click', () => {
+      const confirmed = window.confirm('Clear all names from this family tree?');
+      if (!confirmed) return;
+      document.querySelectorAll('input').forEach(input => input.value = '');
+      document.getElementById('studentName').focus();
+    });
+  </script>
+</body>
+</html>
